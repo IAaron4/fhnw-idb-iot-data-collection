@@ -115,7 +115,7 @@ def measure_all():
     humidity = int(round(dht.humidity))
 
     # Read distance from ultrasonic rangers
-    distance = sonar.get_distance()
+    distance = int(round(sonar.get_distance()))
 
     # Read the light_value and voltage and convert it to integer
     light_value = sensor_light.value
@@ -213,49 +213,13 @@ def receive_thinkspeak_mqtt():
     while True:
         mqtt_client.loop()
 
-#----------------------------------------------Threads-------------------------------------------
-async def take_and_send_measurements_http_post_thinkspeak():
-    # Take a measurement
-    start = time.time()
-    t = time.localtime(start)
-
-    # call measure_all() funktion to get measured values
-    temperature, humidity, distance, light_value, voltage = measure_all()
-
-    # create a  list of measurement
-    measurements = [str(temperature) + " C", str(humidity) + " H", + str(distance) + " D" + str(light_value // 100) + "L", str(voltage // 1) + "V"]
-
-    # select measurment by index_display
-    value = measurements[index_display]
-
-    # display them on hardware
-    display.show(value)
-    # check numb of index_display
-    if index_display == 3:
-       # reset index_display to 0
-        index_display = 0
-    else:
-        # increment index_display by 1
-        index_display += 1
-
-    # Print timestamp, temperatur, humidity
-    print(measurement_format.format(t.tm_hour, t.tm_min, t.tm_sec, temperature, humidity, distance, light_value, voltage))
-
-    # try to send data to thingspeak
-    send_to_thingspeak(TS_WRITE_API_KEY, temperature, humidity, distance, light_value, voltage)
-
-    end = time.time()
-    # Wait for the remaining
-    time.sleep(dht_INTERVAL - (end - start))
-
-
-async def receive_and_display_measurements_mqtt_sub():
+def receive_and_display_measurements_mqtt_sub():
     receive_thinkspeak_mqtt()
 
 
 #-------------------------------------Measurments-Parameters-------------------------------------
 # Constants for measurements
-dht_INTERVAL = 20
+dht_INTERVAL = 5
 
 # Variable for measurement start
 measurement_on = False
@@ -276,7 +240,39 @@ while True:
         measurement_on = True
 
         while measurement_on:
-            take_and_send_measurements_http_post_thinkspeak()
+            # Take a measurement
+            start = time.time()
+            t = time.localtime(start)
+
+            # call measure_all() funktion to get measured values
+            temperature, humidity, distance, light_value, voltage = measure_all()
+
+            # create a  list of measurement
+            measurements = [str(temperature) + " C", str(humidity) + " H", str(distance) + " D", str(light_value // 100) + "L", str(voltage // 1) + "V"]
+
+            # select measurment by index_display
+            value = measurements[index_display]
+
+            # display them on hardware
+            display.show(value)
+            # check numb of index_display
+            if index_display == 3:
+            # reset index_display to 0
+                index_display = 0
+            else:
+                # increment index_display by 1
+                index_display += 1
+
+            # Print timestamp, temperatur, humidity
+            print(measurement_format.format(t.tm_hour, t.tm_min, t.tm_sec, temperature, humidity, distance, light_value, voltage))
+
+            # try to send data to thingspeak
+            send_to_thingspeak(TS_WRITE_API_KEY, temperature, humidity, distance, light_value, voltage)
+
+            end = time.time()
+            # Wait for the remaining
+            time.sleep(dht_INTERVAL)
+
 
             #receive_and_display_measurements_mqtt_sub()
 
