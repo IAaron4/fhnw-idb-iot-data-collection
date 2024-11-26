@@ -8,6 +8,8 @@ Im Rahmen des Moduls "idb - Internet of Things-Datenbeschaffung" an der FHNW hab
 - [ThingSpeak Channel](https://thingspeak.mathworks.com/channels/2753083/private_show)  
 Anmeldung auf ThingSpeak erforderlich
 
+![ThingSpeak Channel Stats](image.png)
+
 # Hardware 
 
 ## Adapter

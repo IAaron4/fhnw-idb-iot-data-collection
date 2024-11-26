@@ -248,7 +248,7 @@ while True:
             temperature, humidity, distance, light_value, voltage = measure_all()
 
             # create a  list of measurement
-            measurements = [str(temperature) + " C", str(humidity) + " H", str(distance) + " D", str(light_value // 100) + "L", str(voltage // 1) + "V"]
+            measurements = [str(temperature) + " C", str(humidity) + " H", f"{distance:03}" + "D", str(light_value // 100) + "L", str(voltage // 1) + "V"]
 
             # select measurment by index_display
             value = measurements[index_display]
